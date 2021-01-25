@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="/dist/umd/bundle.js"></script>
+    <script>
+      let vm = new Vue({
+        el: '#app',
+        data() {
+          return {
+            age: 100,
+            list: [1, 2, 3],
+          };
+        },
+        render: (c) =>
+          c(
+            'ul',
+            {
+              style: {
+                color: '#ccc',
+              },
+            },
+            c(
+              'li',
+              {
+                key: 'a',
+                style: { background: '#110000' },
+              },
+              'A'
+            ),
+            c(
+              'li',
+              {
+                key: 'b',
+                style: { background: '#440000' },
+              },
+              'B'
+            ),
+            c(
+              'li',
+              {
+                key: 'c',
+                style: { background: '#770000' },
+              },
+              'C'
+            ),
+            c(
+              'li',
+              {
+                key: 'd',
+                style: { background: '#AA0000' },
+              },
+              'D'
+            )
+          ),
+      });
+
+      setTimeout(() => {
+        vm.$options.render = (c) =>
+          c(
+            'ul',
+            {
+              style: {
+                color: '#ccc',
+              },
+            },
+
+            c(
+              'li',
+              {
+                key: 'e',
+                style: { background: '#110000' },
+              },
+              'E'
+            ),
+            c(
+              'li',
+              {
+                key: 'b',
+                style: { background: '#440000' },
+              },
+              'B'
+            ),
+            c(
+              'li',
+              {
+                key: 'f',
+                style: { background: '#770000' },
+              },
+              'F'
+            ),
+            c(
+              'li',
+              {
+                key: 'c',
+                style: { background: '#AA0000' },
+              },
+              'C'
+            ),
+            c(
+              'li',
+              {
+                key: 'g',
+                style: { background: '#BB0000' },
+              },
+              'G'
+            )
+          );
+        vm._update(vm._render());
+      }, 1000);
+    </script>
+  </body>
+</html>

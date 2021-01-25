@@ -1,0 +1,1 @@
+import { initMixin } from './mixin';
