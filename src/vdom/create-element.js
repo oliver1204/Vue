@@ -10,14 +10,6 @@ export function h(tag, data = {}, ...children) {
   );
 
   return createElement(tag, data, ...children);
-
-  // if (tag) {
-  //   if (typeof children[0] == 'string' || typeof children[0] == 'number') {
-  //     children[0] = createTextNode(children[0]);
-  //   }
-  //   vnode = createElement(tag, data, ...children);
-  // }
-  // return vnode;
 }
 export function createElement(tag, data = {}, ...children) {
   let key = data.key;
