@@ -36,8 +36,8 @@ export function mountComponent(vm, el) {
 
   // callHook(vm, 'beforeMount')
   /**
-   * 1）渲染
-   * 核心之一， 先render后update, 无论是更新还是创建都需要这个函数
+   *染
+   * 核心 1）渲之一， 先render后update, 无论是更新还是创建都需要这个函数
    * _render 调用 Vue 上的 render 方法，生成虚拟节点
    * _update 通过 vnode, 创建真实的节点
    */

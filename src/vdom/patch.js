@@ -49,7 +49,7 @@ function patchVnode(oldVNode, vNode) {
     updateChildren(el, oldChildren, newChildren);
   } else if (oldChildren.length > 0) {
     // 4.2) 老有孩子, 新的没有孩子
-    el.innerHTML = '';
+    el.innerHTML = "";
   } else {
     // 4.3) 新有孩子, 老的没有孩子
     for (let i = 0; i < newChildren.length; i++) {
@@ -93,8 +93,8 @@ function updateChildren(parentElm, oldCh, newCh) {
     } else if (sameVnode(oldStartVnode, newEndVnode)) {
       // 老队列的头部节点 和 新队列的尾部节点 一样
       patchVnode(oldStartVnode, newEndVnode);
-      // 将老队列的头部节点，插入到 老队列的尾部节点后面（每次都是插入到老队列的尾部节点）
-      // ABCD=> DCBA, 1)BCD A 2)CD BA 3) D CBA 4)  DCBA
+      // 将老队列的头部节点，插入到 老队列的尾部节点后面（每次都是插入到「老队列的尾部节点（oldEndVnode）（固定节点）」的nextSibling ）
+      // ABCD=> DCBA, 1)BCD A  2)CD BA 3)D CBA
       parentElm.insertBefore(oldStartVnode.el, oldEndVnode.el.nextSibling);
       oldStartVnode = oldCh[++oldStartIdx];
       newEndVnode = newCh[--newEndIdx];
@@ -131,7 +131,7 @@ function updateChildren(parentElm, oldCh, newCh) {
 
   if (newStartIdx <= newEndIdx) {
     // 添加节点
-    // insertBefore(el1, el2), 如果将要插入的节点， el2 = null, 等价与 appendChild
+    // insertBefore(el1, el2), 如果将要插入的节点， el2 = null, 等价与 appendChild, 即被插入到子节点的末尾。
     // el: 我要把这个节点插入到谁的前面
     let ele = newCh[newEndIdx + 1] == null ? null : newCh[newEndIdx + 1].el;
 
@@ -164,7 +164,7 @@ export function createElm(vNode) {
   const { children, tag, data, key, text } = vNode;
 
   // 标签
-  if (typeof tag === 'string') {
+  if (typeof tag === "string") {
     vNode.el = document.createElement(tag);
     updateProperties(vNode);
     // 递归创建子节点
@@ -189,7 +189,7 @@ function updateProperties(vNode, oldProps = {}) {
 
   for (let styleName in oldStyle) {
     if (!newStyle[styleName]) {
-      el.style[styleName] = '';
+      el.style[styleName] = "";
     }
   }
 
@@ -200,11 +200,11 @@ function updateProperties(vNode, oldProps = {}) {
   }
 
   for (let key in newProps) {
-    if (key === 'style') {
+    if (key === "style") {
       for (let styleName in newProps.style) {
         el.style[styleName] = newProps.style[styleName];
       }
-    } else if (key === 'class') {
+    } else if (key === "class") {
       el.class = newProps.className;
     } else {
       el.setAttribute(key, newProps[key]);

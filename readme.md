@@ -1,50 +1,51 @@
 ## vue 流程概括
+
 ## 编译入口
+
 在 编译入口文件我中，我们可以看到 vue 实际上分为两个版本：
 
-` scripts/config.js `
+`scripts/config.js`
 
 ```js
 const builds = {
-  'web-runtime-cjs-dev': {
-    entry: resolve('web/entry-runtime.js'),
+  "web-runtime-cjs-dev": {
+    entry: resolve("web/entry-runtime.js"),
   },
-  'web-full-cjs-dev': {
-    entry: resolve('web/entry-runtime-with-compiler.js'),
+  "web-full-cjs-dev": {
+    entry: resolve("web/entry-runtime-with-compiler.js"),
   },
-}
-
+};
 ```
 
-* `/entry-runtime` 是只能通过 `vue.render` 编译， 不允许通过 `template` 方式编译，换言之，此文件比较小，剔除模版解析部分的代码。
+- `/entry-runtime` 是只能通过 `vue.render` 编译， 不允许通过 `template` 方式编译，换言之，此文件比较小，剔除模版解析部分的代码。
 
-* `entry-runtime-with-compiler` 是完整的代码，既可以使用 `vue.render` 也可以使用 `template`。
+- `entry-runtime-with-compiler` 是完整的代码，既可以使用 `vue.render` 也可以使用 `template`。
 
 ## vue 渲染流程
 
 `/core/instance/index.js`
 
 ```js
-import { initMixin } from './init'
-import { stateMixin } from './state'
-import { renderMixin } from './render'
-import { eventsMixin } from './events'
-import { lifecycleMixin } from './lifecycle'
-import { warn } from '../util/index'
+import { initMixin } from "./init";
+import { stateMixin } from "./state";
+import { renderMixin } from "./render";
+import { eventsMixin } from "./events";
+import { lifecycleMixin } from "./lifecycle";
+import { warn } from "../util/index";
 
-function Vue (options) {
-  this._init(options)
+function Vue(options) {
+  this._init(options);
 }
 
-initMixin(Vue)
-stateMixin(Vue)
-eventsMixin(Vue)
-lifecycleMixin(Vue)
-renderMixin(Vue)
+initMixin(Vue);
+stateMixin(Vue);
+eventsMixin(Vue);
+lifecycleMixin(Vue);
+renderMixin(Vue);
 
-export default Vue
-
+export default Vue;
 ```
+
 切片代码分割，调用 `_init`。整体流程如下：
 
 `数据劫持 => vm.$mount() => mountComponent挂载组件 => vm._update(vm._render()) + Watcher + 收集依赖 `
@@ -66,7 +67,7 @@ export function initMixin(Vue) {
   Vue.prototype.$mount = function (el) {
     const vm = this;
     const options = vm.$options;
-    if (typeof el == 'string') {
+    if (typeof el == "string") {
       el = document.querySelector(el);
     }
 
@@ -92,15 +93,14 @@ export function initMixin(Vue) {
 
 ### $mount -- parse-html
 
- `vue` 在 `mount`时， 如果用户传入el需要将页面渲染出来，默认先找 `render` 方法，如果没有 `render`方法，再找 `template`，如果都没有就使用 `el`对应的 `html`。
+`vue` 在 `mount`时， 如果用户传入 el 需要将页面渲染出来，默认先找 `render` 方法，如果没有 `render`方法，再找 `template`，如果都没有就使用 `el`对应的 `html`。
 
 在使用过程中，需要将 `template` 转成 `render`。
 
 在编译过程中，vue 在匹配过程中，一旦找到需要匹配的节点后，就将其截取，例如
-` <div id="app"><p>hello</p></div> `匹配`<div`成功后， 截取，变成`id="app"><p>hello</p></div>`， 依次，直到结束.
+`<div id="app"><p>hello</p></div>`匹配`<div`成功后， 截取，变成`id="app"><p>hello</p></div>`， 依次，直到结束.
 
-
-`<div id="app"><p>hello</p></div>` 通过 parseHTML 函数后变成ast 语法树，
+`<div id="app"><p>hello</p></div>` 通过 parseHTML 函数后变成 ast 语法树，
 
 ```js
 {
@@ -122,21 +122,21 @@ export function initMixin(Vue) {
 
 ```
 
-### _render()
+### \_render()
 
 ```js
-  Vue.prototype._render = function () {
-    const vm = this;
+Vue.prototype._render = function () {
+  const vm = this;
 
-    const { render } = vm.$options;
+  const { render } = vm.$options;
 
-    return render.call(vm, h);
-  };
+  return render.call(vm, h);
+};
 ```
 
-借用h方法，经过运行用户所编写的 `render`方法。 `h`方法将 其 返回的结果编译成 `虚拟DOM` 。
+借用 h 方法，经过运行用户所编写的 `render`方法。 `h`方法将 其 返回的结果编译成 `虚拟DOM` 。
 
-### _update()
+### \_update()
 
 ```js
 Vue.prototype._update = function (vNode) {
@@ -148,25 +148,25 @@ Vue.prototype._update = function (vNode) {
 ```js
 function patch(oldVNode, vNode) {
   const isRealElement = oldVNode.nodeType;
-  if (isRealElement) { // 首次渲染
+  if (isRealElement) {
+    // 首次渲染
     const oldElm = oldVNode; // div id="app"
     const parentElm = oldElm.parentNode; // 父节点
 
     let el = createElm(vNode);
     parentElm.insertBefore(el, oldElm.nextSibling);
     parentElm.removeChild(oldElm);
-  } else { // 更新
+  } else {
+    // 更新
     patchVnode(oldVNode, vNode);
   }
   return vNode.el;
 }
-
 ```
 
-在 _update() 方法通过 createElm 将 `虚拟DOM` 转化为 `真实DOM` 节点。
+在 \_update() 方法通过 createElm 将 `虚拟DOM` 转化为 `真实DOM` 节点。
 
- `patchVnode` 中进行 `DOM DIFF`算法。
-
+`patchVnode` 中进行 `DOM DIFF`算法。
 
 ### DOM DIFF
 
@@ -179,11 +179,11 @@ function patchVnode(oldVNode, vNode) {
   if (oldVNode.tag !== vNode.tag) {
     // 直接全部替换，不做任何比较
   }
-  // 2）比较文本 
+  // 2）比较文本
   if (!oldVNode.tag) {
    // 直接替换
   }
-  // 3）更新属性：如果标签一样 属性不一样 
+  // 3）更新属性：如果标签一样 属性不一样
   let el = (vNode.el = oldVNode.el);
   updateProperties(vNode, oldVNode.data);
 
@@ -214,9 +214,9 @@ function updateChildren() {
       ...
       // ABCD=> DCBA, 1)BCD A 2)CD BA 3) D CBA 4)  DCBA
     }else if('老队列的尾部节点 和 新队列的头部节点 一样') {
-      // ABCD => DABC 
+      // ABCD => DABC
     }else if('乱序') {
-      // 从新队列的头部节点开始查询 
+      // 从新队列的头部节点开始查询
       if('此元素在老序列中没有找到，需要在头部插入') {
         ...
       } else {
@@ -237,5 +237,64 @@ function updateChildren() {
 }
 ```
 
+## 依赖收集
 
+在处理 data 数据时，会 new Observer().
 
+```js
+class Observer {
+  // 已经检测了的标记
+  def(value, '__ob__', this);
+
+  if (Array.isArray(value)) {
+      // 利用原型链的方式对数组的'push'、'pop'、'shift'、'unshift'、'splice'、'sort'、'reverse'方法进行重写
+      // 先找重写的，没有再去找原生的
+      value.__proto__ = arrayMethods;
+
+      this.observeArray(value);
+    } else {
+      this.walk(value);
+    }
+  }
+}
+
+walk(obj) {
+  const keys = Object.keys(obj);
+  keys.forEach((key) => {
+     // 定义响应式数据
+    defineReactive(obj, key, obj[key]);
+  });
+}
+
+function defineReactive(obj, key, val) {
+  const dep = new Dep();
+  let childOb = observe(val);
+
+  Object.defineProperty(obj, key, {
+    enumerable: true,
+    configurable: true,
+    get: function reactiveGetter() {
+      if (Dep.target) {
+        dep.depend(); // 对象的依赖收集
+        if (childOb) {
+          // 数组的依赖收集
+          // 这里虽然对象，也会进来，但是 this.depIds = new Set()，会过滤调对象的已经保存起来的watcher
+          childOb.dep.depend();
+          if (Array.isArray(val)) {
+            dependArray(val);
+          }
+        }
+      }
+      return val;
+    },
+    set: function reactiveSetter(newVal) {
+      console.log('数据更新');
+      if (val === newVal) return;
+      observe(newVal);
+      val = newVal;
+      dep.notify();
+    },
+  });
+}
+
+```
