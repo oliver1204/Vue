@@ -1,5 +1,5 @@
-import Watcher from '../observer/watcher';
-import { patch, createElm } from '../vdom/patch';
+import Watcher from "../observer/watcher";
+import { patch, createElm } from "../vdom/patch";
 /**
  * vnode 渲染成为真实的节点
  */
@@ -47,6 +47,7 @@ export function mountComponent(vm, el) {
   };
   /**
    * 2）渲染 Watcher， 每一个组建都有一个 Watcher
+   * new Watch(): pushTarget into Dep, 使得在 get 时可以收集依赖;
    */
   new Watcher(vm, updateComponent, () => {}, true /* isRenderWatcher */);
   return vm;

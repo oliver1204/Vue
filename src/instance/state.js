@@ -1,4 +1,4 @@
-import { observe } from '../observer/index';
+import { observe } from "../observer/index";
 
 function proxy(vm, source, key) {
   Object.defineProperty(vm, key, {
@@ -29,13 +29,47 @@ function initProps(vm) {}
 function initMethods(vm) {}
 function initData(vm) {
   let data = vm.$options.data;
-  data = vm._data = typeof data === 'function' ? data.call(vm, vm) : data || {};
+  data = vm._data = typeof data === "function" ? data.call(vm, vm) : data || {};
 
   for (let key in data) {
-    proxy(vm, '_data', key);
+    proxy(vm, "_data", key);
   }
   // 数据劫持
   observe(data);
 }
-function initComputed(vm) {}
+function initComputed(vm) {
+  const watchers = (vm._computedWatchers = Object.create(null));
+  // 遍历 computed 选项，依次进行定义
+  for (const key in computed) {
+    const getter = computed[key];
+
+    // 为计算属性创建内部 watcher
+    watchers[key] = new Watcher(
+      vm,
+      getter || noop, // 计算属性 text 函数
+      noop,
+      computedWatcherOptions // { lazy: true } ，指定 lazy 属性，表示要实例化 computedWatcher
+    );
+
+    // 为计算属性定义 getter
+    defineComputed(vm, key, userDef);
+  }
+}
 function initWatch(vm) {}
+
+function defineComputed(target, key, userDef) {
+  Object.defineProperty(target, key, {
+    get: function () {
+      const watcher = this._computedWatchers && this._computedWatchers[key];
+      if (watcher) {
+        if (watcher.dirty) {
+          watcher.evaluate();
+        }
+        if (Dep.target) {
+          watcher.depend();
+        }
+        return watcher.value;
+      }
+    },
+  });
+}

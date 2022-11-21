@@ -1,5 +1,5 @@
 export function isObject(obj) {
-  return obj !== null && typeof obj === 'object';
+  return obj !== null && typeof obj === "object";
 }
 
 export function def(obj, key, val, enumerable) {
@@ -31,7 +31,7 @@ export function mergeOptions(parent, child) {
   return options;
 }
 
-function mergeHook(parentVal, childVal) {
+export function mergeHook(parentVal, childVal) {
   if (childVal) {
     if (parentVal) {
       return parentVal.concat(childVal);
@@ -45,4 +45,23 @@ function mergeHook(parentVal, childVal) {
   } else {
     return parentVal;
   }
+}
+
+export function flushCallbacks() {
+  pending = false;
+  const copies = callbacks.slice(0);
+  callbacks.length = 0;
+  for (let i = 0; i < copies.length; i++) {
+    copies[i]();
+  }
+}
+
+/**
+ * Mix properties into target object.
+ */
+export function extend(to, _from) {
+  for (const key in _from) {
+    to[key] = _from[key];
+  }
+  return to;
 }

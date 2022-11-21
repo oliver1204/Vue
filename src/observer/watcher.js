@@ -1,5 +1,5 @@
-import Dep, { pushTarget, popTarget } from './dep';
-import { queueWatcher } from './scheduler';
+import Dep, { pushTarget, popTarget } from "./dep";
+import { queueWatcher } from "./scheduler";
 
 let uid = 0;
 
@@ -8,7 +8,7 @@ export default class Watcher {
     this.vm = vm;
     this.cb = cb;
     this.id = ++uid;
-    this.getter = expOrFn;
+    this.getter = expOrFn; // updateComponent
     this.depIds = new Set();
 
     this.get();

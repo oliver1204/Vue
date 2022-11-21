@@ -1,6 +1,6 @@
-import { isObject, def } from '../util/index';
-import { arrayMethods } from './array';
-import Dep from './dep';
+import { isObject, def } from "../util/index";
+import { arrayMethods } from "./array";
+import Dep from "./dep";
 
 export function observe(value) {
   if (!isObject(value)) return;
@@ -16,7 +16,7 @@ export class Observer {
      * 但是 不能用 this.value = value 这种方式，因为 observeArray 时会循环引用，所以
      * 用def定义响应式， enumerable: false不可以枚举，不会被defineReactive监控
      */
-    def(value, '__ob__', this);
+    def(value, "__ob__", this);
 
     if (Array.isArray(value)) {
       // 利用原型链的方式对数组的'push'、'pop'、'shift'、'unshift'、'splice'、'sort'、'reverse'方法进行重写
@@ -65,11 +65,11 @@ export function defineReactive(obj, key, val) {
       return val;
     },
     set: function reactiveSetter(newVal) {
-      console.log('数据更新');
+      console.log("数据更新");
       if (val === newVal) return;
       observe(newVal);
       val = newVal;
-      dep.notify();
+      dep.notify(); // 让watcher去更新watcher.update
     },
   });
 }
