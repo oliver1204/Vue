@@ -4,13 +4,13 @@ import { patch, createElm } from "../vdom/patch";
  * vnode 渲染成为真实的节点
  */
 export function lifecycleMixin(Vue) {
-  Vue.prototype._update = function (vNode) {
+  Vue.prototype._update = function (vNode, hydrating) {
     const vm = this;
     const el = vm.$el; // 真实节点
     const prevVNode = vm._vNode; // 上一次的虚拟节点
     if (!prevVNode) {
       // 首次挂载
-      vm._vNode = vNode;
+      vm.$el = vm._vNode = vNode;
       patch(el, vNode);
     } else {
       // 更新
@@ -36,8 +36,7 @@ export function mountComponent(vm, el) {
 
   // callHook(vm, 'beforeMount')
   /**
-   *染
-   * 核心 1）渲之一， 先render后update, 无论是更新还是创建都需要这个函数
+   * 核心 1）渲染之一， 先render后update, 无论是更新还是创建都需要这个函数
    * _render 调用 Vue 上的 render 方法，生成虚拟节点
    * _update 通过 vnode, 创建真实的节点
    */
@@ -46,7 +45,7 @@ export function mountComponent(vm, el) {
     vm._update(vm._render());
   };
   /**
-   * 2）渲染 Watcher， 每一个组建都有一个 Watcher
+   * 2）渲染 Watcher， 每一个组件都有一个 Watcher
    * new Watch(): pushTarget into Dep, 使得在 get 时可以收集依赖;
    */
   new Watcher(vm, updateComponent, () => {}, true /* isRenderWatcher */);

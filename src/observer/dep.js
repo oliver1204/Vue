@@ -15,7 +15,7 @@ class Dep {
   }
 
   depend() {
-    // 将watcher收集起来
+    // 将当前检测的watcher收集起来
     if (Dep.target) {
       Dep.target.addDep(this);
     }
@@ -29,7 +29,7 @@ class Dep {
   }
 }
 
-Dep.target = null;
+Dep.target = null; // 全局变量，检测当前正在检测的watcher
 const targetStack = [];
 
 export function pushTarget(watcher) {

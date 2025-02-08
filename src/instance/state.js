@@ -1,4 +1,5 @@
 import { observe } from "../observer/index";
+import { isPlainObject } from "../util";
 
 function proxy(vm, source, key) {
   Object.defineProperty(vm, key, {
@@ -16,7 +17,7 @@ export function initState(vm) {
 
   if (opts.props) initProps(vm, opts.props);
   if (opts.methods) initMethods(vm, opts.methods);
-  if (opts.data) {
+  if (opts.data) { 
     initData(vm);
   }
   if (opts.computed) initComputed(vm, opts.computed);
@@ -55,7 +56,29 @@ function initComputed(vm) {
     defineComputed(vm, key, userDef);
   }
 }
-function initWatch(vm) {}
+function initWatch(vm, watch) {
+  for (const key in watch) {
+    const handler = watch[key];
+    if (isArray(handler)) {
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i]);
+      }
+    } else {
+      createWatcher(vm, key, handler);
+    }
+  }
+}
+
+function createWatcher(vm, expOrFn, handler, options = {}) {
+  if (isPlainObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
+  if (typeof handler === "string") {
+    handler = vm[handler];
+  }
+  return vm.$watch(expOrFn, handler, options);
+}
 
 function defineComputed(target, key, userDef) {
   Object.defineProperty(target, key, {

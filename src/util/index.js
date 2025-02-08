@@ -11,6 +11,10 @@ export function def(obj, key, val, enumerable) {
   });
 }
 
+export function isPlainObject(obj) {
+  return _toString.call(obj) === "[object Object]";
+}
+
 export function mergeOptions(parent, child) {
   const options = {};
   let key;
